@@ -1,7 +1,6 @@
 from lark import Lark, v_args, Transformer, Visitor
 
 grammar = r"""
-
 # Top level rule
 start: item*
 
@@ -24,30 +23,41 @@ recursive_function: "defr" name "(" args ")" "{" fnblock "}"
 ?args: /[a-zA-Z_,]+/
 
 # If statements
-if_exp: "if" "(" value ")" "{" block "}" "else" "{" block "}"
-      | "if" "(" value ")" value "else" value
+if_exp: "if" "(" value ")" (value|pblock) "else" (value|pblock)
 
-_blockitem: line ";" | if_exp
-
+# Code blocks
 ?block: (_blockitem)*
-
+_blockitem: line ";" | if_exp
+?pblock: "{" block "}"
 fnblock: block
 
 ?line: value
      | val
 
+# Varible assignment
 val: "val" name "=" value
 
+# Atomics
+?atomic: reference
+      | nat
+      | "(" value ")"
+      | _lambda
+      | string
+      | list
+
+# Values
 ?value: atomic
      | application
      | _expression
      | pipe
 
+# Pipelines
 ?pipe: pipe ("|>" call)* 
     | atomic
 
 call: value value*
 
+# Expressions/operators
 _expression: add | sub | mul | div | lt | gt | eq | ne
 
 add: atomic "+" atomic
@@ -61,34 +71,25 @@ gte: atomic ">=" atomic
 eq : atomic "==" atomic
 ne : atomic "!=" atomic
 
-?atomic: reference
-      | nat
-      | "(" value ")"
-      | _lambda
-      | string
-      | list
-
+# Datatypes
 list: "[" csv "]"
-
 csv: (atomic ","?)*
-
-_lambda: lambda_exp | lambda_block
-      
-lambda_exp: "@" locals "." term
-lambda_block: "@" locals "." "{" fnblock "}"
-
-term: value
-      
-reference: name
-
 nat: /[0-9]+/
 
-?application: atomic (value)*
-
-?name: /(?!^def$)[A-Za-z_]+/
-
+# Lambdas
+_lambda: lambda_exp | lambda_block
+lambda_exp: "@" locals "." term
+lambda_block: "@" locals "." "{" fnblock "}"
+term: value
 locals: local+
 local: /[A-Za-z]/
+
+# Other
+reference: name
+?application: atomic (value)*
+
+# Common/misc
+?name: /(?!^def$)[A-Za-z_]+/
 
 string: ESCAPED_STRING
 

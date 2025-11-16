@@ -1,1 +1,8 @@
-putbool true;
+defr fibonacci(n) {
+    if (n < 2) n
+    else {
+        (self n - 1) + (self n - 2);
+    }
+}
+
+putint (fibonacci 5);

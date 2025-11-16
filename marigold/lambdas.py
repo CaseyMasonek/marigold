@@ -2,9 +2,6 @@
 TRUE = lambda a: lambda b: a
 FALSE = lambda a: lambda b: b
 
-true = lambda a: lambda b: a
-false = lambda a: lambda b: b
-
 def encode_bool(b):
     return TRUE if b else FALSE
 
