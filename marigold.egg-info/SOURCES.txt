@@ -1,0 +1,12 @@
+setup.py
+marigold/__init__.py
+marigold/builtins.py
+marigold/cli.py
+marigold/compiler.py
+marigold/parser.py
+marigold.egg-info/PKG-INFO
+marigold.egg-info/SOURCES.txt
+marigold.egg-info/dependency_links.txt
+marigold.egg-info/entry_points.txt
+marigold.egg-info/requires.txt
+marigold.egg-info/top_level.txt
