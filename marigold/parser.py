@@ -4,8 +4,13 @@ grammar = r"""
 # Top level rule
 start: item*
 
-?item: module # An item is either a module
-     | moduleitem # OR an item in a module
+?item: module
+     | normalitem
+
+?normalitem: block # A block of code
+           | function # A function
+           | _recursive_function -> recursive_function # A recursive function
+           | if_exp # Or an if statement
 
 # Modules contain module items
 module: "module" name "{" moduleitem* "}"
@@ -13,12 +18,12 @@ module: "module" name "{" moduleitem* "}"
 # Module items are either 
 ?moduleitem: block # A block of code
            | function # A function
-           | recursive_function # A recursive function
+           | _recursive_function -> inner_rec # A recursive function
            | if_exp # Or an if statement
 
 # Functions
 function: "def" name "(" args? ")" "{" fnblock "}" 
-recursive_function: "defr" name "(" args ")" "{" fnblock "}"
+_recursive_function: "defr" name "(" args ")" "{" fnblock "}"
 
 ?args: /[a-zA-Z_,]+/
 
@@ -44,6 +49,9 @@ val: "val" name "=" value
       | _lambda
       | string
       | list
+      | hashmap
+
+hashmap: "{" (string ":" atomic (","|"}"))+
 
 # Values
 ?value: atomic
@@ -85,7 +93,7 @@ locals: local+
 local: /[A-Za-z]/
 
 # Other
-reference: name
+reference:  /[A-Za-z_.]+/
 ?application: atomic (value)*
 
 # Common/misc

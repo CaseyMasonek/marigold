@@ -4,42 +4,60 @@ from builtins import *
 def gen_nat_code(n):
     codestr = "(lambda f: lambda x:"
 
-    for _ in range(n):
-        codestr += 'f('
-
-    codestr += 'x'
-
-    for _ in range(n):
-        codestr += ')'
-
-    codestr += ')'
+    codestr += f"(rep(f,x,{n})))"
 
     return codestr
 
+def gen_str_code(s):
+        code = ""
+
+        s = s[1:-1]
+
+        for char in s:
+            n = gen_nat_code(ord(char))
+
+            code += f"CONS({n})("
+            
+        code += "NIL"
+
+        for _ in s:
+            code += ")"
+
+        return code
+
 @v_args(inline=True)
 class Compiler(Transformer):
-    def __init__(self,lang="python"):
+    def __init__(self):
         self.variables = {}
-        self.lang = lang
-
-    def anonfn(self,arg):
-        match self.lang:
-            case "python":
-                return f"(lambda {arg}: "
-            case "js":
-                return f"({arg} => "
 
     def block(self,*items):
         return "\n".join(items)
 
     def start(self,*items):
+        print(items)
+
         if type(items) == tuple:
             return "\n".join(items)
 
         return "\n".join(items.children)
-    
-    def module(self, name, block):
-        return block
+
+    def module(self,name,*items):
+        name = name[::]
+
+        for item in items:
+            print("!!!",item)
+
+        if type(items) != type([]):
+            items = [items]
+
+        print(items,len(items))
+
+        for item in items:
+            self.variables[name+"."+item["name"]] = item["term"]
+
+        print(self.variables)
+
+        return ""
 
     def fnblock(self,lines):
         return lines.split("\n")[-1]
@@ -70,7 +88,6 @@ class Compiler(Transformer):
         self.variables[name.value] = term
 
         return ""
-    #eeffoc
 
     def csv(self,*l):
         return l
@@ -89,12 +106,35 @@ class Compiler(Transformer):
 
         return codestr;
 
+    def hashmap(self,*items):
+        key = None
+        h = "HASH"
+
+        for item in items:
+            if type(item) == type(tuple()):
+                break
+            if key == None:
+                key = item[::]
+            else:
+                h = f"SET({h})({gen_str_code(key)})({item})"
+
+        print(h)
+
+        return h
+
     def recursive_function(self,name,arg,block):
         term = f"""(Z(lambda self: lambda {arg}: {block}))"""
 
         self.variables[name.value] = term
 
         return ""
+
+    def inner_rec(self,name,arg,block):
+        term = f"""(Z(lambda self: lambda {arg}: {block}))"""
+
+        name = name[::]
+
+        return {"name":name,"term":term}
     
     def if_exp(self,value,then,otherwise):
         return f"((({value})(lambda _: {then})(lambda _: {otherwise}))(NIL))"
@@ -133,21 +173,7 @@ class Compiler(Transformer):
         return f"(NOT (EQ ({a}) ({b})))"
 
     def string(self,s):
-        code = ""
-
-        s = s[1:-1]
-
-        for char in s:
-            n = gen_nat_code(ord(char))
-
-            code += f"CONS({n})("
-            
-        code += "NIL"
-
-        for _ in s:
-            code += ")"
-
-        return code
+        return gen_str_code(s)
 
     def lambda_exp(self,locals,term):
         codestr = "("

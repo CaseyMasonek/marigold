@@ -1,3 +1,13 @@
+# Repeated applications
+
+def rep(f,x,n):
+    res = x
+
+    for _ in range(n):
+        res = f(res)
+
+    return res
+
 # Booleans
 TRUE = lambda a: lambda b: a
 FALSE = lambda a: lambda b: b
