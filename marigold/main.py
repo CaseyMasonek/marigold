@@ -2,7 +2,6 @@ from parser import parser
 from compiler import Compiler
 from lambdas import *
 import sys
-import click
 
 sys.setrecursionlimit(1000000)
 
@@ -22,3 +21,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    

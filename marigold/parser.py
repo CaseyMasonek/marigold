@@ -16,7 +16,7 @@ start: item*
 module: "module" name "{" moduleitem* "}"
 
 # Module items are either 
-?moduleitem: block # A block of code
+moduleitem: block # A block of code
            | function # A function
            | _recursive_function -> inner_rec # A recursive function
            | if_exp # Or an if statement
@@ -53,15 +53,16 @@ val: "val" name "=" value
 
 hashmap: "{" (string ":" atomic (","|"}"))+
 
+
 # Values
 ?value: atomic
      | application
      | _expression
-     | pipe
+     | pipeline
 
 # Pipelines
-?pipe: pipe ("|>" call)* 
-    | atomic
+pipeline: value (pipe)+
+pipe: "|" atomic atomic*
 
 call: value value*
 
@@ -94,7 +95,7 @@ local: /[A-Za-z]/
 
 # Other
 reference:  /[A-Za-z_.]+/
-?application: atomic (value)*
+?application: atomic (value)* 
 
 # Common/misc
 ?name: /(?!^def$)[A-Za-z_]+/

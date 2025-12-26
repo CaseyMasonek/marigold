@@ -1,6 +1,5 @@
-defr fib(n) {
-    if (n < 2) n
-    else (self n - 1) + (self n - 2)
-}
-
-putint (fib 20) + 2;
+10
+| RANGE
+| MAP @n.n+1
+| MAP (@n.n*n)
+| putlist;

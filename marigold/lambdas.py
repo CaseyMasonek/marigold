@@ -315,3 +315,8 @@ def puthash(h):
 
 def putlist(l):
     print(decode_list(l))
+
+def putstrlist(l):
+    print(decode_other_list(l,decode_str))
+
+

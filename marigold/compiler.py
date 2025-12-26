@@ -2,9 +2,7 @@ from lark import Transformer, v_args, exceptions, Tree
 from builtins import *    
 
 def gen_nat_code(n):
-    codestr = "(lambda f: lambda x:"
-
-    codestr += f"(rep(f,x,{n})))"
+    codestr = f"encode_int({n})"
 
     return codestr
 
@@ -24,6 +22,19 @@ def gen_str_code(s):
             code += ")"
 
         return code
+
+def gen_pipe_code(pipes,val):
+    if len(pipes) == 0:
+        return val
+    
+    pipe = pipes[-1]
+
+    codestr = f"({pipe["fn"]})({gen_pipe_code(pipes[:-1],val)})"
+
+    for arg in pipe["args"]:
+        codestr += f"(({arg}))"
+
+    return codestr
 
 @v_args(inline=True)
 class Compiler(Transformer):
@@ -53,6 +64,7 @@ class Compiler(Transformer):
         print(items,len(items))
 
         for item in items:
+            
             self.variables[name+"."+item["name"]] = item["term"]
 
         print(self.variables)
@@ -209,21 +221,18 @@ class Compiler(Transformer):
             "args": items[1:]
         }
     
-    def pipe(self,value,call=None):
-        if call == None:
-            return value
+    def pipeline(self,val,*pipes):
+        print(val)
+        pipes = list(pipes)
 
-        fn = call["function"]
-        args = call["args"]
+        return gen_pipe_code(pipes,val)
 
-        codestr = f"(({fn})({value})"
+    def pipe(self,fn,*args):
+        return {
+            "fn":fn.value,
+            "args":args
+        }
 
-        for arg in args:
-            codestr += f"({arg})"
-
-        codestr += ")"
-
-        return codestr
 
     def application(self,function,value):
         return "(" + function + "(" +  value + "))"
