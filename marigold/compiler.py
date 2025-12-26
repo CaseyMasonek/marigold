@@ -1,4 +1,4 @@
-from lark import Transformer, v_args, exceptions, Tree
+from lark import Transformer, v_args, exceptions, Tree, Token
 from builtins import *    
 
 def gen_nat_code(n):
@@ -228,8 +228,11 @@ class Compiler(Transformer):
         return gen_pipe_code(pipes,val)
 
     def pipe(self,fn,*args):
+        if type(fn) == Token:
+            fn = fn.value
+
         return {
-            "fn":fn.value,
+            "fn":fn,
             "args":args
         }
 
