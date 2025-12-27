@@ -42,37 +42,66 @@ class Compiler(Transformer):
         self.variables = {}
 
     def block(self,*items):
-        return "\n".join(items)
+        lines = ""
+
+        should_add_newlines = True
+        open_parens = 0
+
+        for item in items:
+            if type(item) == type(dict()):
+                should_add_newlines = False
+
+                cond = item["condition"]
+                val = item["val"]
+                open_parens += 1
+
+                lines += f"\n(({cond})(lambda _: {val})(lambda _: "
+            else:
+                lines += item
+                if (should_add_newlines):
+                    lines += '\n'
+
+        while open_parens > 0:
+            lines += ")(NIL))"
+            open_parens -= 1
+
+        print(lines)
+
+        return lines
 
     def start(self,*items):
-        print(items)
+        #print(items)
 
         if type(items) == tuple:
             return "\n".join(items)
 
-        return "\n".join(items.children)
+        return "\n".join(items.children).strip()
 
     def module(self,name,*items):
         name = name[::]
 
         for item in items:
-            print("!!!",item)
+            #print("!!!",item)
+            pass
 
         if type(items) != type([]):
             items = [items]
 
-        print(items,len(items))
+        #print(items,len(items))
 
         for item in items:
             
             self.variables[name+"."+item["name"]] = item["term"]
 
-        print(self.variables)
+        #print(self.variables)
 
         return ""
 
     def fnblock(self,lines):
         return lines.split("\n")[-1]
+    
+    def guard(self,condition,val):
+        return {"type":"guard","condition":condition,"val":val}
     
     def function(self,name,*rest):
         if len(rest) == 2:
@@ -130,7 +159,7 @@ class Compiler(Transformer):
             else:
                 h = f"SET({h})({gen_str_code(key)})({item})"
 
-        print(h)
+        #print(h)
 
         return h
 
@@ -152,12 +181,12 @@ class Compiler(Transformer):
         return f"((({value})(lambda _: {then})(lambda _: {otherwise}))(NIL))"
     
     def add(self,a,b):
-        print(a,b)
+        #print(a,b)
 
         return f"(ADD ({a}) ({b}))"
     
     def sub(self,a,b):
-        print(f"(SUB {a} {b})")
+        #print(f"(SUB {a} {b})")
         return f"(SUB ({a}) ({b}))"
     
     def mul(self,a,b):
@@ -183,6 +212,53 @@ class Compiler(Transformer):
     
     def ne(self,a,b):
         return f"(NOT (EQ ({a}) ({b})))"
+    
+    def and_exp(self,a,b):
+        return f"(AND({a})({b}))"
+    
+    def or_exp(self,a,b):
+        return f"(OR({a})({b}))"
+
+    def succ(self,a):
+        return f"(SUCC({a}))"
+    
+    def pred(self,a):
+        return f"(PRED({a}))"
+    
+    def addeq(self,name,value):
+        self.variables[name.value] = f"(ADD({self.variables[name.value]})({value}))"
+
+        return ""
+    
+    def subeq(self,name,value):
+        self.variables[name.value] = f"(SUB({self.variables[name.value]})({value}))"
+
+        return ""
+    
+    def muleq(self,name,value):
+        self.variables[name.value] = f"(MULT({self.variables[name.value]})({value}))"
+
+        return ""
+
+    def diveq(self,name,value):
+        self.variables[name.value] = f"(DIV({self.variables[name.value]})({value}))"
+
+        return ""
+    
+    def pipeeq(self,name,*values):
+        first = values[0]
+        varval = self.variables[name.value]
+
+        codestr = f"(({first})({varval})"
+
+        for value in values[1:]:
+            codestr += f"({value})"
+        
+        codestr += ")"
+
+        self.variables[name.value] = codestr
+
+        return ""
 
     def string(self,s):
         return gen_str_code(s)
@@ -222,7 +298,7 @@ class Compiler(Transformer):
         }
     
     def pipeline(self,val,*pipes):
-        print(val)
+        #print(val)
         pipes = list(pipes)
 
         return gen_pipe_code(pipes,val)

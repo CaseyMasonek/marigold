@@ -1,14 +1,7 @@
-defr fib(n) {
-    if (n < 2) 1 else {
-        (self n-1) + (self n-2);
-    }
+defr factorial(n) {
+    guard (n == 0) 1;
+
+    n * (self (n - 1));
 }
 
-def firstn(n) {
-    n | RANGE | MAP fib;
-}
-
-
-(askint "how many fibbonacci nums? " )
-| firstn 
-| putlist;
+putint (factorial 5);

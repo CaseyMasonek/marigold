@@ -23,6 +23,9 @@ NOT = lambda b: b(FALSE)(TRUE)
 AND = lambda a: lambda b: a(b)(FALSE)
 OR = lambda a: lambda b: a(TRUE)(b)
 
+# Conditionals
+IF = lambda b: lambda x: lambda y: b(x)(y)
+
 # Numbers
 ZERO = lambda f: lambda x: x
 ONE = lambda f: lambda x: f(x)
@@ -49,6 +52,7 @@ def decode_int(l):
 # Arithmetic
 ADD = lambda a: lambda b: a(SUCC)(b)
 MULT = lambda a: lambda b: a(lambda x: b(SUCC)(x))(ZERO)
+POW = lambda a: lambda b: b(lambda x: MULT(a)(x))(a)
 
 # Pairs
 PAIR = lambda h: lambda t: lambda f: f(h)(t)
@@ -297,26 +301,32 @@ def decode_hash(x,decode_key=decode_str,decode_value=decode_int):
 
 def putint(i):
     print(decode_int(i))
+    return i
 
 def askint(s):
     return encode_int(int(input(decode_str(s))))
 
 def put(s):
     print(decode_str(s))
+    return s
 
 def ask(s):
     return encode_str(input(decode_str(s)))
 
 def putbool(b):
     print(decode_bool(b))
+    return b
 
 def puthash(h):
     print(decode_hash(h))
+    return h
 
 def putlist(l):
     print(decode_list(l))
+    return l
 
 def putstrlist(l):
     print(decode_other_list(l,decode_str))
+    return l
 
 

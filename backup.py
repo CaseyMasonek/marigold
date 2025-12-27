@@ -1,6 +1,4 @@
-from lark import Lark, v_args, Transformer, Visitor
-
-grammar = r"""
+"""
 # Top level rule
 start: item*
 
@@ -36,15 +34,11 @@ _blockitem: line ";" | if_exp
 ?pblock: "{" block "}"
 fnblock: block
 
-?line: guard 
-     | value
+?line: value
      | val
-     | valchange
-
 
 # Varible assignment
-val: name "=" value
-?valchange: addeq | subeq | muleq | diveq | pipeeq
+val: "val" name "=" value
 
 # Atomics
 ?atomic: reference
@@ -57,7 +51,6 @@ val: name "=" value
 
 hashmap: "{" (string ":" atomic (","|"}"))+
 
-guard: "guard" "(" value ")" value
 
 # Values
 ?value: atomic
@@ -72,30 +65,18 @@ pipe: "|" atomic atomic*
 call: value value*
 
 # Expressions/operators
-_expression: add | sub | mul | div | lt | gt | eq | ne | and | or | succ | pred 
-           | atomic
+_expression: add | sub | mul | div | lt | gt | eq | ne
 
 add: atomic "+" atomic
 sub: atomic "-" atomic
 mul: atomic "*" atomic
-div: atomic "//" atomic
+div: atomic "/" atomic
 lt : atomic "<" atomic
 lte: atomic "<=" atomic
 gt : atomic ">" atomic
 gte: atomic ">=" atomic
 eq : atomic "==" atomic
 ne : atomic "!=" atomic
-and: atomic "&&" atomic
-or: atomic "||" atomic
-succ: atomic "++"
-pred: atomic "--"
-concat: atomic "<>" atomic
-
-addeq: name "+=" atomic
-subeq: name "-=" atomic
-muleq: name "*=" atomic
-diveq: name "//=" atomic
-pipeeq: name "|=" atomic*
 
 # Datatypes
 list: "[" csv "]"
@@ -123,5 +104,3 @@ string: ESCAPED_STRING
 %ignore WS
 %import common.ESCAPED_STRING
 """
-
-parser = Lark(grammar,parser="earley")
