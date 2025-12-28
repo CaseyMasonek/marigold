@@ -55,13 +55,12 @@ def move(state) {
     index = get_index pos;
     item = (get_item state) pos;
 
-    if ((item | putint) == 0) {
+    item |= putint;
+
+    if (item == 0) {
         state
-        | update_board index
-        | update_turn;
-    } else {
-        state | update_turn;
-    }
+        | update_board index;
+    } else state
 }
 
 def check_row(state,row_indeces) {
@@ -73,11 +72,9 @@ def check_row(state,row_indeces) {
     item_two = row | INDEX 1;
     item_three = row | INDEX 2;
 
-    condition = (item_one == item_two)
-    | AND (item_one == item_two)
-    | AND (item_one != 0);
+    condition = (item_one == item_two) && (item_one == item_two) && (item_one != 0);
 
-    if (condition) item_one else 0
+    if (condition) 0 else item_one;
 }
 
 def check_board(state) {
@@ -91,10 +88,13 @@ def check_board(state) {
 defr main(state) {
     new_state = state
     | display
-    | move;
+    | move
+    | update_turn;
     
     winner = check_board new_state;
 
     self new_state;
 }
 
+
+main initial_state;

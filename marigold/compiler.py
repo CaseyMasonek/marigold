@@ -41,32 +41,36 @@ class Compiler(Transformer):
     def __init__(self):
         self.variables = {}
 
-    def block(self,*items):
+    def comment(self,*_):
+        return ""
+
+    def block(self, *items):
+        if not items:
+            return ""
+        
+        has_guards = any(isinstance(item, dict) and item.get("type") == "guard" for item in items)
+        
+        if not has_guards:
+            return "\n".join(str(item) for item in items)
+        
         lines = ""
-
-        should_add_newlines = True
         open_parens = 0
-
-        for item in items:
-            if type(item) == type(dict()):
-                should_add_newlines = False
-
+        
+        for i, item in enumerate(items):
+            if isinstance(item, dict) and item.get("type") == "guard":
                 cond = item["condition"]
                 val = item["val"]
                 open_parens += 1
-
-                lines += f"\n(({cond})(lambda _: {val})(lambda _: "
+                lines += f"(({cond})(lambda _: {val})(lambda _: "
             else:
-                lines += item
-                if (should_add_newlines):
-                    lines += '\n'
-
+                lines += str(item)
+                if i < len(items) - 1:
+                    lines += "\n"
+        
         while open_parens > 0:
-            lines += ")(NIL))"
+            lines += "))(NIL)"
             open_parens -= 1
-
-        print(lines)
-
+        
         return lines
 
     def start(self,*items):

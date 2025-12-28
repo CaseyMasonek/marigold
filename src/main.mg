@@ -1,7 +1,9 @@
-defr factorial(n) {
-    guard (n == 0) 1;
+defr fact(n) {
+    # calculate n! #
 
-    n * (self (n - 1));
+    guard (n == 0) 1; # base case #
+
+    n * (self n--);
 }
 
-putint (factorial 5);
+putint (fact 5);

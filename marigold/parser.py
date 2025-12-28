@@ -11,6 +11,9 @@ start: item*
            | function # A function
            | _recursive_function -> recursive_function # A recursive function
            | if_exp # Or an if statement
+           | comment
+
+comment: "#" /[^#]/* "#" 
 
 # Modules contain module items
 module: "module" name "{" moduleitem* "}"
@@ -20,6 +23,7 @@ moduleitem: block # A block of code
            | function # A function
            | _recursive_function -> inner_rec # A recursive function
            | if_exp # Or an if statement
+           | comment
 
 # Functions
 function: "def" name "(" args? ")" "{" fnblock "}" 
@@ -32,11 +36,11 @@ if_exp: "if" "(" value ")" (value|pblock) "else" (value|pblock)
 
 # Code blocks
 ?block: (_blockitem)*
-_blockitem: line ";" | if_exp
+_blockitem: line ";" | if_exp | comment
 ?pblock: "{" block "}"
 fnblock: block
 
-?line: guard 
+?line: guard
      | value
      | val
      | valchange
@@ -72,7 +76,7 @@ pipe: "|" atomic atomic*
 call: value value*
 
 # Expressions/operators
-_expression: add | sub | mul | div | lt | gt | eq | ne | and | or | succ | pred 
+_expression: add | sub | mul | div | lt | gt | eq | ne | and_exp | or_exp | succ | pred 
            | atomic
 
 add: atomic "+" atomic
@@ -85,8 +89,8 @@ gt : atomic ">" atomic
 gte: atomic ">=" atomic
 eq : atomic "==" atomic
 ne : atomic "!=" atomic
-and: atomic "&&" atomic
-or: atomic "||" atomic
+and_exp: value "&&" atomic
+or_exp: value "||" atomic
 succ: atomic "++"
 pred: atomic "--"
 concat: atomic "<>" atomic
