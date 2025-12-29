@@ -1,7 +1,7 @@
-from parser import parser
-from compiler import Compiler
-from lambdas import *
-from lcode import lambdacode
+from marigold.parser import parser
+from marigold.compiler import Compiler
+from marigold.lambdas import *
+from marigold.lcode import lambdacode
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sys
@@ -29,4 +29,4 @@ def main():
         return e
 
 if __name__ == '__main__':
-    app.run(port=8000)
+    app.run()
