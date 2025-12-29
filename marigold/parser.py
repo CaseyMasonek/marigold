@@ -48,7 +48,7 @@ fnblock: block
 
 # Varible assignment
 val: name "=" value
-?valchange: addeq | subeq | muleq | diveq | pipeeq
+?valchange: addeq | subeq | muleq | diveq | pipeeq | modeq
 
 # Atomics
 ?atomic: reference
@@ -77,12 +77,13 @@ call: value value*
 
 # Expressions/operators
 _expression: add | sub | mul | div | lt | gt | eq | ne | and_exp | or_exp | succ | pred 
-           | atomic
+           | atomic | mod | not_exp
 
 add: atomic "+" atomic
 sub: atomic "-" atomic
 mul: atomic "*" atomic
 div: atomic "//" atomic
+mod: atomic "%" atomic
 lt : atomic "<" atomic
 lte: atomic "<=" atomic
 gt : atomic ">" atomic
@@ -91,6 +92,7 @@ eq : atomic "==" atomic
 ne : atomic "!=" atomic
 and_exp: value "&&" atomic
 or_exp: value "||" atomic
+not_exp: "!" value
 succ: atomic "++"
 pred: atomic "--"
 concat: atomic "<>" atomic
@@ -99,6 +101,7 @@ addeq: name "+=" atomic
 subeq: name "-=" atomic
 muleq: name "*=" atomic
 diveq: name "//=" atomic
+modeq: name "%=" atomic
 pipeeq: name "|=" atomic*
 
 # Datatypes

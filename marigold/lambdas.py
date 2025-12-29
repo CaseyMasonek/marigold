@@ -1,5 +1,4 @@
 # Repeated applications
-
 def rep(f,x,n):
     res = x
 

@@ -198,6 +198,9 @@ class Compiler(Transformer):
 
     def div(self,a,b):
         return f"(DIV ({a}) ({b}))"
+    
+    def mod(self,a,b):
+        return f"(MOD ({a}) ({b}))"
 
     def lt(self,a,b):
         return f"(LT ({a}) ({b}))"
@@ -222,6 +225,9 @@ class Compiler(Transformer):
     
     def or_exp(self,a,b):
         return f"(OR({a})({b}))"
+    
+    def not_exp(self,a):
+        return f"(NOT({a}))"
 
     def succ(self,a):
         return f"(SUCC({a}))"
@@ -246,6 +252,11 @@ class Compiler(Transformer):
 
     def diveq(self,name,value):
         self.variables[name.value] = f"(DIV({self.variables[name.value]})({value}))"
+
+        return ""
+    
+    def modeq(self,name,value):
+        self.variables[name.value] = f"(MOD({self.variables[name.value]})({value}))"
 
         return ""
     
