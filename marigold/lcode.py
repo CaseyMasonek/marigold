@@ -1,6 +1,4 @@
-lambdacode = """
-# Repeated applications
-
+lambdacode = """# Repeated applications
 def rep(f,x,n):
     res = x
 
@@ -12,6 +10,8 @@ def rep(f,x,n):
 # Booleans
 TRUE = lambda a: lambda b: a
 FALSE = lambda a: lambda b: b
+true = TRUE
+false = FALSE
 
 def encode_bool(b):
     return TRUE if b else FALSE
@@ -127,6 +127,7 @@ def decode_plist(l):
 
 # Right fold lists
 NIL = FALSE
+nil = NIL
 CONS = lambda h: lambda t: lambda f: lambda x: f(h)(t(f)(x))
 ISNIL = lambda l: l(lambda h: lambda t: FALSE) (TRUE)
 LEN = lambda l: l(lambda h:(lambda r: SUCC(r))) (ZERO)

@@ -2,7 +2,7 @@ from lark import Lark, v_args, Transformer, Visitor
 
 grammar = r"""
 # Top level rule
-start: item*
+start: item* 
 
 ?item: module
      | normalitem
@@ -119,7 +119,7 @@ local: /[A-Za-z]/
 
 # Other
 reference:  /[A-Za-z_.]+/
-?application: atomic (value)* 
+?application: (value)* atomic
 
 # Common/misc
 ?name: /(?!^def$)[A-Za-z_]+/
@@ -129,6 +129,7 @@ string: ESCAPED_STRING
 %import common.WS
 %ignore WS
 %import common.ESCAPED_STRING
+%ignore " "
 """
 
 parser = Lark(grammar,parser="earley")

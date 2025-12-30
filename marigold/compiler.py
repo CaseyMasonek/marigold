@@ -274,6 +274,15 @@ class Compiler(Transformer):
         self.variables[name.value] = codestr
 
         return ""
+    
+    def nil(self):
+        return "(NIL)"
+    
+    def true(self):
+        return "(TRUE)"
+    
+    def false(self):
+        return "(FALSE)"
 
     def string(self,s):
         return gen_str_code(s)
@@ -326,7 +335,6 @@ class Compiler(Transformer):
             "fn":fn,
             "args":args
         }
-
 
     def application(self,function,value):
         return "(" + function + "(" +  value + "))"
