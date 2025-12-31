@@ -163,7 +163,9 @@ UPDATE = lambda l: lambda i: lambda v: RANGE(LEN(l))(lambda h: lambda r: EQ(h)(i
 
 SAME = lambda a: lambda b: MAP(RANGE(LEN(a)))(lambda i: EQ(INDEX(a)(i))(INDEX(b)(i)))(lambda h: lambda r: h(r)(FALSE))(TRUE)
 
-GETINDEX = lambda l: lambda i: Z(lambda f: lambda x: (
+PUSH = lambda l: lambda x: REVERSE(CONS(x)(REVERSE(l)))
+
+FIND = lambda l: lambda i: Z(lambda f: lambda x: (
     EQ(HEAD(x))(i)
     (lambda _: ZERO)
     (lambda _: SUCC(f(TAIL(x)))
