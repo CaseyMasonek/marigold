@@ -151,6 +151,9 @@ class Compiler(Transformer):
 
         return codestr;
 
+    def pair(self,a,b):
+        return f"(PAIR({a})({b}))"
+
     def hashmap(self,*items):
         key = None
         h = "HASH"

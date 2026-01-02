@@ -58,7 +58,9 @@ val: name "=" value
       | string
       | list
       | hashmap
+      | pair
 
+pair: "(" atomic "," atomic ")"
 hashmap: "{" (string ":" atomic (","|"}"))+
 
 guard: "guard" "(" value ")" value

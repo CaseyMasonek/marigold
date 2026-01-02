@@ -333,4 +333,5 @@ def putstrlist(l):
     print(decode_other_list(l,decode_str))
     return l
 
-
+def putpair(p):
+    print(decode_pair(p))
