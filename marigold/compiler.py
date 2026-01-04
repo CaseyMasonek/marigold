@@ -184,8 +184,26 @@ class Compiler(Transformer):
 
         return {"name":name,"term":term}
     
-    def if_exp(self,value,then,otherwise):
-        return f"((({value})(lambda _: {then})(lambda _: {otherwise}))(NIL))"
+    def if_exp(self,value,then,*rest):
+        otherwise = rest[-1]
+        elifs = rest[:-1]
+
+        codestr = f"((({value})(lambda _: {then})"
+        
+        for elif_exp in elifs:
+            codestr += elif_exp
+        
+        codestr += "(lambda _:" + otherwise + ")"
+
+        for _ in elifs:
+            codestr += ")(NIL)"
+
+        codestr += "))(NIL)"
+
+        return codestr
+    
+    def elif_exp(self,condition,value):
+        return f"(({condition})(lambda _: {value})"
     
     def add(self,a,b):
         #print(a,b)

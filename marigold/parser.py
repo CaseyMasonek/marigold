@@ -32,7 +32,8 @@ _recursive_function: "defr" name "(" args ")" "{" fnblock "}"
 ?args: /[a-zA-Z_,]+/
 
 # If statements
-if_exp: "if" "(" value ")" (value|pblock) "else" (value|pblock)
+if_exp: "if" "(" value ")" (value|pblock) elif_exp* "else" (value|pblock)
+elif_exp: "elif" "(" value ")" (value|pblock)
 
 # Code blocks
 ?block: (_blockitem)*
@@ -120,11 +121,11 @@ locals: local+
 local: /[A-Za-z]/
 
 # Other
-reference:  /[A-Za-z_.]+/
+reference: /[A-Za-z_.]+/
 ?application: (value)* atomic
 
 # Common/misc
-?name: /(?!^def$)[A-Za-z_]+/
+?name: /[A-Za-z_]+/
 
 string: ESCAPED_STRING
 
