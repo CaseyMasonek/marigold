@@ -91,7 +91,7 @@ lt : atomic "<" atomic
 lte: atomic "<=" atomic
 gt : atomic ">" atomic
 gte: atomic ">=" atomic
-eq : atomic "==" atomic
+eq : value "==" value
 ne : atomic "!=" atomic
 and_exp: value "&&" atomic
 or_exp: value "||" atomic

@@ -196,14 +196,14 @@ class Compiler(Transformer):
         codestr += "(lambda _:" + otherwise + ")"
 
         for _ in elifs:
-            codestr += ")(NIL)"
+            codestr += "))(NIL)"
 
         codestr += "))(NIL)"
 
         return codestr
     
     def elif_exp(self,condition,value):
-        return f"(({condition})(lambda _: {value})"
+        return f"(({condition})(lambda _: {value})(lambda _:"
     
     def add(self,a,b):
         #print(a,b)
