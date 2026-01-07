@@ -121,7 +121,7 @@ locals: local+
 local: /[A-Za-z]/
 
 # Other
-reference: /[A-Za-z_.]+/
+reference: /(?!(elif)\b)[A-Za-z_.]+/
 ?application: (value)* atomic
 
 # Common/misc

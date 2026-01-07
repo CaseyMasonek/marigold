@@ -156,6 +156,7 @@ REVERSE = lambda l: RANGE(LEN(l))(lambda h: lambda r: (CONS(INDEX(l)(SUB(PRED(LE
 FOLD = lambda l: lambda f: lambda x: REVERSE(REVERSE(l)(f)(x))
 
 MAP = lambda l: lambda f: l(lambda h: lambda r: CONS(f(h))(r))(NIL)
+MAPL = lambda l: lambda f: REVERSE(MAP(REVERSE(l))(f))
 
 FILTER = lambda l: lambda c: l(lambda h: lambda r: (c(h)(CONS(h)(r))(r)))(NIL)
 
@@ -335,3 +336,4 @@ def putstrlist(l):
 
 def putpair(p):
     print(decode_pair(p))
+    return p

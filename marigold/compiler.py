@@ -189,21 +189,21 @@ class Compiler(Transformer):
         elifs = rest[:-1]
 
         codestr = f"((({value})(lambda _: {then})"
-        
-        for elif_exp in elifs:
-            codestr += elif_exp
-        
-        codestr += "(lambda _:" + otherwise + ")"
 
-        for _ in elifs:
-            codestr += "))(NIL)"
+        else_part = otherwise
+        
+        for elif_exp in reversed(elifs):
+            c,v = elif_exp
+            else_part = f"(({c})(lambda _: {v})(lambda _: {else_part})(NIL))"
+        
+        codestr += "(lambda _:" + else_part + ")"
 
-        codestr += "))(NIL)"
+        codestr += ")(NIL))"
 
         return codestr
     
     def elif_exp(self,condition,value):
-        return f"(({condition})(lambda _: {value})(lambda _:"
+        return (condition,value)
     
     def add(self,a,b):
         #print(a,b)
