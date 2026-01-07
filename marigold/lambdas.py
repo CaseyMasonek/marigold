@@ -192,7 +192,6 @@ def decode_other_list(l,decoder):
     return l(lambda h: lambda acc: [decoder(h)] + acc)([])
 
 # Modulo and floor division
-
 MODSLOW = ( # First mod idea I came up with, but it's really slow
     lambda a: lambda b: EQ(a)(b)(ZERO)(
     Z(lambda f: lambda x:

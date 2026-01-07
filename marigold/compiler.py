@@ -85,21 +85,40 @@ class Compiler(Transformer):
         name = name[::]
 
         for item in items:
-            #print("!!!",item)
-            pass
+            self.variables[name + "." + item["name"]] = item["value"]
 
-        if type(items) != type([]):
-            items = [items]
-
-        #print(items,len(items))
-
-        for item in items:
-            
-            self.variables[name+"."+item["name"]] = item["term"]
-
-        #print(self.variables)
+            if item["name"] == "Cons":
+                self.variables[name] = item["value"]
 
         return ""
+
+    def mval(self,name,value):
+        return {'type':'mval',"name":name[::],'value':value}
+    
+    def mfunc(self,name,*rest):
+        if len(rest) == 2:
+            args,block = rest
+        else:
+            block = rest[0]
+            args = ""
+
+        term = "("
+
+        if args == "":
+            term += "(lambda _: "
+
+        for arg in args.split(','):
+            term += f"(lambda {arg}: "
+
+        term += block + ")"
+
+        if args == "":
+            term += ")"
+
+        for arg in args.split(','):
+            term += f")"
+
+        return {'type':'mfunc','name':name,'value':term}
 
     def fnblock(self,lines):
         return lines.split("\n")[-1]

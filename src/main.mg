@@ -1,28 +1,23 @@
-def say(n) {
-    if (n % 15 == 0) {
-        put "fizzbuzz";
-    } elif (n % 3 == 0) {
-        put "fizz";
-    } elif (n % 5 == 0) {
-        put "buzz";
-    } else {
-        putint n;
+module PList {
+    pnil = (false,false);
+
+    def Cons(x,y) {
+        (true,(x,(true,y)));
+    }
+
+    def Head(p) {
+        FIRST (SECOND p);
+    }
+
+    def Tail(p) {
+        SECOND (SECOND p);
     }
 }
 
-def fizzbuzz(n) {
-    (RANGE n)
-    | MAP SUCC
-    | MAPL say;
-}
+myplist = PList 1 (PList 2 (PList 3 (PList 4 PList.pnil)));
 
-fizzbuzz 100;
+t = (PList.Tail myplist);
 
-def isAdult(age) {
-    if (age < 12) "kid"
-    elif (age < 18) "teen"
-    elif (age < 65) "adult"
-    else "senior"
-}
+h = PList.Head t;
 
-put (isAdult 16);
+putint h;

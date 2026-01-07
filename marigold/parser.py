@@ -18,12 +18,14 @@ comment: "#" /[^#]/* "#"
 # Modules contain module items
 module: "module" name "{" moduleitem* "}"
 
-# Module items are either 
-moduleitem: block # A block of code
-           | function # A function
-           | _recursive_function -> inner_rec # A recursive function
-           | if_exp # Or an if statement
+?moduleitem: mval
            | comment
+           | mfunc
+           | mrfunc
+
+mval: name "=" value ";"
+mfunc: "def" name "(" args? ")" "{" fnblock "}" 
+mrfunc: "defr" name "(" args ")" "{" fnblock "}" 
 
 # Functions
 function: "def" name "(" args? ")" "{" fnblock "}" 
