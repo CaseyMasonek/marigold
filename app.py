@@ -24,7 +24,8 @@ def main():
 
         print("\nSending:",c)
 
-        return jsonify({"code":lambdacode+c})
+        
+        return jsonify({"code":lambdacode+"\n"+c})
     except Exception as e:
         return e
 

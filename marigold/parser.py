@@ -135,7 +135,7 @@ reference: refname
 
 # Common/misc
 ?name: /[A-Za-z_]+/
-?refname: /(?!(elif|unpack|import|importall)\b)[A-Za-z_.]+/
+?refname: /(?!(elif|unpack|import|importall)\b)[A-Za-z_.$]+/
 
 string: ESCAPED_STRING
 

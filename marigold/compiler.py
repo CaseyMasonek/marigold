@@ -74,7 +74,8 @@ class Compiler(Transformer):
         return ""
 
     @debug
-    def import_exp(self,module):
+    def import_exp(self,module:str):
+        module = module.replace('$','Packages.')
         path = "/".join(self.path.split('/')[:-1]) + '/'
 
         m = module.lower().split(".")
@@ -107,6 +108,7 @@ class Compiler(Transformer):
     
     @debug
     def importall(self,module):
+        module = module.replace('$','Packages.')
         path = "/".join(self.path.split('/')[:-1]) + '/'
 
         m = module.lower().split(".")
