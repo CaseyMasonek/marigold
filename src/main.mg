@@ -1,5 +1,5 @@
 importall Queue;
 
 Queue 5
-| Enqueue "hi"
+| Enqueue "hello"
 | Describe put;
