@@ -1,11 +1,28 @@
 from lark import Transformer, v_args, exceptions, Tree, Token
-from builtins import *    
+from builtins import *
 
+def debug(f):
+    def inner(*args,**kwargs):
+        code = f(*args,**kwargs)
+
+        if type(code) != type(""):
+            return code
+        
+        if (code.count("(") != code.count(")")):
+            print(f,code.count("("),code.count(")"))
+            print(code)
+
+        return code
+
+    return inner
+
+@debug
 def gen_nat_code(n):
     codestr = f"encode_int({n})"
 
     return codestr
 
+@debug
 def gen_str_code(s):
         code = ""
 
@@ -23,16 +40,17 @@ def gen_str_code(s):
 
         return code
 
+@debug
 def gen_pipe_code(pipes,val):
     if len(pipes) == 0:
         return val
     
     pipe = pipes[-1]
 
-    codestr = f"({pipe["fn"]})({gen_pipe_code(pipes[:-1],val)})"
+    codestr = f"({pipe['fn']})({gen_pipe_code(pipes[:-1],val)})"
 
     for arg in pipe["args"]:
-        codestr += f"(({arg}))"
+        codestr += f"({arg})"
 
     return codestr
 
@@ -40,10 +58,36 @@ def gen_pipe_code(pipes,val):
 class Compiler(Transformer):
     def __init__(self):
         self.variables = {}
+        self.mvars = {}
 
+    @debug
+    def munpack(self,module):
+        modvars = self.variables.items()
+
+        modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == module and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
+
+        for name,val in modvars:
+            print("!!!",name)
+            self.mvars[name] = val
+
+        return ""
+
+    @debug
+    def import_exp(self,module):
+        path = "."
+
+        m = module.split(".")
+        path += "/".join(m) + ".mg"
+
+        print(path)
+
+        return ""
+
+    @debug
     def comment(self,*_):
         return ""
 
+    @debug
     def block(self, *items):
         if not items:
             return ""
@@ -73,6 +117,7 @@ class Compiler(Transformer):
         
         return lines
 
+    @debug
     def start(self,*items):
         #print(items)
 
@@ -80,21 +125,39 @@ class Compiler(Transformer):
             return "\n".join(items)
 
         return "\n".join(items.children).strip()
+    
+    @debug
+    def unpack(self,module):
+        modvars = self.variables.items()
+
+        modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == module and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
+
+        for name,val in modvars:
+            print("!!!",name)
+            self.variables[name] = val
+
+        return ""
 
     def module(self,name,*items):
         name = name[::]
 
         for item in items:
+            if type(item) == type(""):
+                continue
             self.variables[name + "." + item["name"]] = item["value"]
 
             if item["name"] == "Cons":
                 self.variables[name] = item["value"]
 
+        self.mvars = {}
+
         return ""
 
     def mval(self,name,value):
+        self.mvars[name.value] = value
         return {'type':'mval',"name":name[::],'value':value}
     
+    @debug
     def mfunc(self,name,*rest):
         if len(rest) == 2:
             args,block = rest
@@ -118,14 +181,19 @@ class Compiler(Transformer):
         for arg in args.split(','):
             term += f")"
 
+        self.mvars[name.value] = term
+
         return {'type':'mfunc','name':name,'value':term}
 
+    @debug
     def fnblock(self,lines):
         return lines.split("\n")[-1]
     
+    @debug
     def guard(self,condition,val):
         return {"type":"guard","condition":condition,"val":val}
     
+    @debug
     def function(self,name,*rest):
         if len(rest) == 2:
             args,block = rest
@@ -153,9 +221,11 @@ class Compiler(Transformer):
 
         return ""
 
+    @debug
     def csv(self,*l):
         return l
     
+    @debug
     def list(self,csv):
         codestr = "("
 
@@ -170,6 +240,7 @@ class Compiler(Transformer):
 
         return codestr;
 
+    @debug
     def pair(self,a,b):
         return f"(PAIR({a})({b}))"
 
@@ -189,6 +260,7 @@ class Compiler(Transformer):
 
         return h
 
+    @debug
     def recursive_function(self,name,arg,block):
         term = f"""(Z(lambda self: lambda {arg}: {block}))"""
 
@@ -196,6 +268,7 @@ class Compiler(Transformer):
 
         return ""
 
+    @debug
     def inner_rec(self,name,arg,block):
         term = f"""(Z(lambda self: lambda {arg}: {block}))"""
 
@@ -203,9 +276,14 @@ class Compiler(Transformer):
 
         return {"name":name,"term":term}
     
+    @debug
     def if_exp(self,value,then,*rest):
         otherwise = rest[-1]
         elifs = rest[:-1]
+
+        print(otherwise,elifs)
+
+        otherwise = otherwise.strip()
 
         codestr = f"((({value})(lambda _: {then})"
 
@@ -219,87 +297,112 @@ class Compiler(Transformer):
 
         codestr += ")(NIL))"
 
+        print(codestr)
+
         return codestr
     
+    @debug
     def elif_exp(self,condition,value):
         return (condition,value)
     
+    @debug
     def add(self,a,b):
         #print(a,b)
 
         return f"(ADD ({a}) ({b}))"
     
+    @debug
     def sub(self,a,b):
         #print(f"(SUB {a} {b})")
         return f"(SUB ({a}) ({b}))"
     
+    @debug
     def mul(self,a,b):
         return f"(MULT ({a}) ({b}))"
 
+    @debug
     def div(self,a,b):
         return f"(DIV ({a}) ({b}))"
     
+    @debug
     def mod(self,a,b):
         return f"(MOD ({a}) ({b}))"
 
+    @debug
     def lt(self,a,b):
         return f"(LT ({a}) ({b}))"
 
+    @debug
     def lte(self,a,b):
         return f"(LTE ({a}) ({b}))"
 
+    @debug
     def gt(self,a,b):
         return f"(GT ({a}) ({b}))"
     
+    @debug
     def gte(self,a,b):
         return f"(GTE ({a}) ({b}))"
     
+    @debug
     def eq(self,a,b):
         return f"(EQ ({a}) ({b}))"
     
+    @debug
     def ne(self,a,b):
         return f"(NOT (EQ ({a}) ({b})))"
     
+    @debug
     def and_exp(self,a,b):
         return f"(AND({a})({b}))"
     
+    @debug
     def or_exp(self,a,b):
         return f"(OR({a})({b}))"
     
+    @debug
     def not_exp(self,a):
         return f"(NOT({a}))"
 
+    @debug
     def succ(self,a):
         return f"(SUCC({a}))"
     
+    @debug
     def pred(self,a):
         return f"(PRED({a}))"
     
+    @debug
     def addeq(self,name,value):
         self.variables[name.value] = f"(ADD({self.variables[name.value]})({value}))"
 
         return ""
     
+    @debug
     def subeq(self,name,value):
         self.variables[name.value] = f"(SUB({self.variables[name.value]})({value}))"
 
         return ""
     
+    @debug
     def muleq(self,name,value):
         self.variables[name.value] = f"(MULT({self.variables[name.value]})({value}))"
 
         return ""
 
+    @debug
     def diveq(self,name,value):
         self.variables[name.value] = f"(DIV({self.variables[name.value]})({value}))"
 
         return ""
     
+    @debug
     def modeq(self,name,value):
         self.variables[name.value] = f"(MOD({self.variables[name.value]})({value}))"
 
         return ""
     
+    @debug
     def pipeeq(self,name,*values):
         first = values[0]
         varval = self.variables[name.value]
@@ -315,18 +418,23 @@ class Compiler(Transformer):
 
         return ""
     
+    @debug
     def nil(self):
         return "(NIL)"
     
+    @debug
     def true(self):
         return "(TRUE)"
     
+    @debug
     def false(self):
         return "(FALSE)"
 
+    @debug
     def string(self,s):
         return gen_str_code(s)
-
+    
+    @debug
     def lambda_exp(self,locals,term):
         codestr = "("
 
@@ -341,6 +449,7 @@ class Compiler(Transformer):
 
         return codestr
     
+    @debug
     def lambda_block(self,locals,term):
         codestr = "("
 
@@ -355,18 +464,21 @@ class Compiler(Transformer):
 
         return codestr
     
+    @debug
     def call(self,*items):
         return {
             "function": items[0],
             "args": items[1:]
         }
     
+    @debug
     def pipeline(self,val,*pipes):
         #print(val)
         pipes = list(pipes)
 
         return gen_pipe_code(pipes,val)
 
+    @debug
     def pipe(self,fn,*args):
         if type(fn) == Token:
             fn = fn.value
@@ -376,20 +488,26 @@ class Compiler(Transformer):
             "args":args
         }
 
+    @debug
     def application(self,function,value):
         return "(" + function + "(" +  value + "))"
     
+    @debug
     def nat(self,num):
         n = int(num.value)
 
         return gen_nat_code(n)
         
+    @debug
     def val(self,name,value):
         self.variables[name.value] = value
 
         return ""
 
+    @debug
     def reference(self,name):
         if name.value in self.variables.keys():
             return self.variables[name.value]
+        if name.value in self.mvars.keys():
+            return self.mvars[name.value]
         return name

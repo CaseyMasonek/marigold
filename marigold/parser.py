@@ -12,8 +12,11 @@ start: item*
            | _recursive_function -> recursive_function # A recursive function
            | if_exp # Or an if statement
            | comment
+           | unpack
 
 comment: "#" /[^#]/* "#" 
+
+import_exp: "import" name ";"
 
 # Modules contain module items
 module: "module" name "{" moduleitem* "}"
@@ -22,10 +25,13 @@ module: "module" name "{" moduleitem* "}"
            | comment
            | mfunc
            | mrfunc
+           | munpack
 
 mval: name "=" value ";"
 mfunc: "def" name "(" args? ")" "{" fnblock "}" 
 mrfunc: "defr" name "(" args ")" "{" fnblock "}" 
+munpack: "unpack" name ";"
+
 
 # Functions
 function: "def" name "(" args? ")" "{" fnblock "}" 
@@ -36,6 +42,7 @@ _recursive_function: "defr" name "(" args ")" "{" fnblock "}"
 # If statements
 if_exp: "if" "(" value ")" (value|pblock) elif_exp* "else" (value|pblock)
 elif_exp: "elif" "(" value ")" (value|pblock)
+unpack: "unpack" name ";"
 
 # Code blocks
 ?block: (_blockitem)*
@@ -123,7 +130,7 @@ locals: local+
 local: /[A-Za-z]/
 
 # Other
-reference: /(?!(elif)\b)[A-Za-z_.]+/
+reference: /(?!(elif|unpack|import)\b)[A-Za-z_.]+/
 ?application: (value)* atomic
 
 # Common/misc
