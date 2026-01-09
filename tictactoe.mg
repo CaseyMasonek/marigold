@@ -1,5 +1,5 @@
 initial_board = [[0,0,0],[0,0,0],[0,0,0]];
-initial_state = ((PAIR initial_board) 1);
+initial_state = (((PAIR initial_board) 1);)
 
 def display(state) {
     state 

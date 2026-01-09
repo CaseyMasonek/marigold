@@ -117,7 +117,7 @@ subeq: name "-=" atomic
 muleq: name "*=" atomic
 diveq: name "//=" atomic
 modeq: name "%=" atomic
-pipeeq: name "|=" atomic*
+pipeeq: name "->" atomic*
 
 # Datatypes
 list: "[" csv "]"

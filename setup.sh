@@ -1,0 +1,1 @@
+git clone https://github.com/CaseyMasonek/marigold.git && cd marigold && pipx install . && pipx inject marigold lark
