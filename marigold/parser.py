@@ -18,8 +18,8 @@ start: item*
 
 comment: "#" /[^#]/* "#" 
 
-import_exp: "import" name ";"
-importall: "importall" name ";"
+import_exp: "import" refname ";"
+importall: "importall" refname ";"
 
 # Modules contain module items
 module: "module" name "{" moduleitem* "}"
@@ -133,11 +133,12 @@ locals: local+
 local: /[A-Za-z]/
 
 # Other
-reference: /(?!(elif|unpack|import|importall)\b)[A-Za-z_.]+/
+reference: refname
 ?application: (value)* atomic
 
 # Common/misc
 ?name: /[A-Za-z_]+/
+?refname: /(?!(elif|unpack|import|importall)\b)[A-Za-z_.]+/
 
 string: ESCAPED_STRING
 

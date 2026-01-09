@@ -80,6 +80,8 @@ class Compiler(Transformer):
         m = module.lower().split(".")
         path += "/".join(m) + ".mg"
 
+        modname = module.split(".")[-1]
+
         print(path)
 
         with open(path) as f:
@@ -92,7 +94,7 @@ class Compiler(Transformer):
 
             modvars = compiler.variables.items()
 
-            modvars = [(k,v) for k,v in modvars if k.split(".")[0] == module]
+            modvars = [(k,v) for k,v in modvars if k.split(".")[0] == modname]
 
             print(stuff)
 
@@ -110,6 +112,8 @@ class Compiler(Transformer):
         m = module.lower().split(".")
         path += "/".join(m) + ".mg"
 
+        modname = module.split(".")[-1]
+
         print(path)
 
         with open(path) as f:
@@ -122,7 +126,7 @@ class Compiler(Transformer):
 
             modvars = compiler.variables.items()
 
-            modvars = [(k,v) for k,v in modvars if k.split(".")[0] == module]
+            modvars = [(k,v) for k,v in modvars if k.split(".")[0] == modname]
 
             print(stuff)
 
@@ -131,7 +135,7 @@ class Compiler(Transformer):
 
             modvars = compiler.variables.items()
 
-            modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == module and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
+            modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == modname and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
 
             for name,val in modvars:
                 self.variables[name] = val
