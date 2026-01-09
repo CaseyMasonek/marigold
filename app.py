@@ -20,7 +20,7 @@ def main():
 
         print(tree.pretty())
 
-        c = Compiler().transform(tree)
+        c = Compiler('').transform(tree)
 
         print("\nSending:",c)
 
