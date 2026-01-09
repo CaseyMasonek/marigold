@@ -1,28 +1,27 @@
-from .parser import parser
-from .compiler import Compiler
-from .builtins import *
+from parser import parser
+from compiler import Compiler
+from lambdas import *
 import sys
-import click
+import typer
+
+app = typer.Typer()
 
 sys.setrecursionlimit(1000000)
 
-@click.command()
-@click.option('--file', prompt='File: ',
-              help='The marigold program to run.')
-def main(file):
-    with open('src/main.mg') as f:
+@app.command()
+def run(path:str):
+    with open(path) as f:
         tree = parser.parse(f.read())
 
         print(tree.pretty())
 
-        c = Compiler().transform(tree)
-
+        c = Compiler(path).transform(tree)
+        
         print("\nCode to run:",c)
 
         print('-'*10,'OUTPUT','-'*10)
 
         exec(c)
 
-
 if __name__ == '__main__':
-    main()
+    app()

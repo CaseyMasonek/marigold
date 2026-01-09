@@ -13,10 +13,13 @@ start: item*
            | if_exp # Or an if statement
            | comment
            | unpack
+           | import_exp
+           | importall
 
 comment: "#" /[^#]/* "#" 
 
 import_exp: "import" name ";"
+importall: "importall" name ";"
 
 # Modules contain module items
 module: "module" name "{" moduleitem* "}"
@@ -130,7 +133,7 @@ locals: local+
 local: /[A-Za-z]/
 
 # Other
-reference: /(?!(elif|unpack|import)\b)[A-Za-z_.]+/
+reference: /(?!(elif|unpack|import|importall)\b)[A-Za-z_.]+/
 ?application: (value)* atomic
 
 # Common/misc

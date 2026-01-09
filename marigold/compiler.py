@@ -1,5 +1,6 @@
 from lark import Transformer, v_args, exceptions, Tree, Token
 from builtins import *
+from parser import parser
 
 def debug(f):
     def inner(*args,**kwargs):
@@ -56,9 +57,10 @@ def gen_pipe_code(pipes,val):
 
 @v_args(inline=True)
 class Compiler(Transformer):
-    def __init__(self):
+    def __init__(self,path):
         self.variables = {}
         self.mvars = {}
+        self.path = path
 
     @debug
     def munpack(self,module):
@@ -67,19 +69,72 @@ class Compiler(Transformer):
         modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == module and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
 
         for name,val in modvars:
-            print("!!!",name)
             self.mvars[name] = val
 
         return ""
 
     @debug
     def import_exp(self,module):
-        path = "."
+        path = "/".join(self.path.split('/')[:-1]) + '/'
 
-        m = module.split(".")
+        m = module.lower().split(".")
         path += "/".join(m) + ".mg"
 
         print(path)
+
+        with open(path) as f:
+            ast = parser.parse(f.read())
+
+            compiler = Compiler(path)
+            stuff = compiler.transform(ast)
+
+            print("!!",compiler.variables)
+
+            modvars = compiler.variables.items()
+
+            modvars = [(k,v) for k,v in modvars if k.split(".")[0] == module]
+
+            print(stuff)
+
+            for name,val in modvars:
+                self.variables[name] = val
+
+            print("^^^^",self.path,self.variables)
+
+        return ""
+    
+    @debug
+    def importall(self,module):
+        path = "/".join(self.path.split('/')[:-1]) + '/'
+
+        m = module.lower().split(".")
+        path += "/".join(m) + ".mg"
+
+        print(path)
+
+        with open(path) as f:
+            ast = parser.parse(f.read())
+
+            compiler = Compiler(path)
+            stuff = compiler.transform(ast)
+
+            print("!!",compiler.variables)
+
+            modvars = compiler.variables.items()
+
+            modvars = [(k,v) for k,v in modvars if k.split(".")[0] == module]
+
+            print(stuff)
+
+            for name,val in modvars:
+                self.variables[name] = val
+
+            modvars = compiler.variables.items()
+
+            modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == module and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
+
+            for name,val in modvars:
+                self.variables[name] = val
 
         return ""
 
@@ -123,6 +178,8 @@ class Compiler(Transformer):
 
         if type(items) == tuple:
             return "\n".join(items)
+        
+        print(self.variables)
 
         return "\n".join(items.children).strip()
     
@@ -133,7 +190,6 @@ class Compiler(Transformer):
         modvars = [(k.split(".")[1],v) for k,v in modvars if k.split(".")[0] == module and len(k.split(".")) > 1 and k.split(".")[1] != "Cons"]
 
         for name,val in modvars:
-            print("!!!",name)
             self.variables[name] = val
 
         return ""
@@ -281,8 +337,6 @@ class Compiler(Transformer):
         otherwise = rest[-1]
         elifs = rest[:-1]
 
-        print(otherwise,elifs)
-
         otherwise = otherwise.strip()
 
         codestr = f"((({value})(lambda _: {then})"
@@ -296,8 +350,6 @@ class Compiler(Transformer):
         codestr += "(lambda _:" + else_part + ")"
 
         codestr += ")(NIL))"
-
-        print(codestr)
 
         return codestr
     

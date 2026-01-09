@@ -11,7 +11,7 @@ def main():
 
         print(tree.pretty())
 
-        c = Compiler().transform(tree)
+        c = Compiler('./src/main.mg').transform(tree)
 
         print("\nCode to run:",c)
 
