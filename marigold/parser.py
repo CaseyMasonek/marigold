@@ -11,12 +11,10 @@ start: item*
            | function # A function
            | _recursive_function -> recursive_function # A recursive function
            | if_exp # Or an if statement
-           | comment
            | unpack
            | import_exp
            | importall
 
-comment: "#" /[^#]/* "#" 
 
 import_exp: "import" refname ";"
 importall: "importall" refname ";"
@@ -25,7 +23,6 @@ importall: "importall" refname ";"
 module: "module" name "{" moduleitem* "}"
 
 ?moduleitem: mval
-           | comment
            | mfunc
            | mrfunc
            | munpack
@@ -49,7 +46,7 @@ unpack: "unpack" name ";"
 
 # Code blocks
 ?block: (_blockitem)*
-_blockitem: line ";" | if_exp | comment
+_blockitem: line ";" | if_exp 
 ?pblock: "{" block "}"
 fnblock: block
 
@@ -146,6 +143,7 @@ string: ESCAPED_STRING
 %ignore WS
 %import common.ESCAPED_STRING
 %ignore " "
+%ignore  "#" /[^#]/* "#" 
 """
 
 parser = Lark(grammar,parser="earley")
