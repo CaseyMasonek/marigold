@@ -69,6 +69,8 @@ val: name "=" value
       | list
       | hashmap
       | pair
+      | succ
+      | pred
 
 pair: "(" atomic "," atomic ")"
 hashmap: "{" (string ":" atomic (","|"}"))+
@@ -88,7 +90,7 @@ pipe: "|" atomic atomic*
 call: value value*
 
 # Expressions/operators
-_expression: add | sub | mul | div | lt | gt | eq | ne | and_exp | or_exp | succ | pred 
+_expression: add | sub | mul | div | lt | gt | eq | ne | and_exp | or_exp 
            | atomic | mod | not_exp
 
 add: atomic "+" atomic

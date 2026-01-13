@@ -11,7 +11,7 @@ def say(n) {
 }
 
 def fizzbuzz(n) {
-    (RANGE n)
+    RANGE n
     | MAP SUCC
     | MAPL say;
 }
