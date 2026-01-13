@@ -91,6 +91,8 @@ SUM = lambda l: l(lambda h: lambda r: ADD(r)(h))(ZERO)
 HEAD = lambda l: l(lambda h: lambda r: h) (FALSE)
 TAIL = lambda l: lambda c: lambda n: l(lambda h: lambda r: lambda g: g(h)(r(c))) (lambda _: n) (FALSE)
 
+CONCAT = lambda a: lambda b: REVERSE(FOLD(b)(lambda h: lambda r: PUSH(r)(h))(a))
+
 # Pair lists
 """PNIL = PAIR(TRUE)(TRUE)
 PISNIL = FIRST
