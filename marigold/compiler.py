@@ -83,7 +83,7 @@ class Compiler(Transformer):
 
         modname = module.split(".")[-1]
 
-        print(path)
+        #print(path)
 
         with open(path) as f:
             ast = parser.parse(f.read())
@@ -91,18 +91,18 @@ class Compiler(Transformer):
             compiler = Compiler(path)
             stuff = compiler.transform(ast)
 
-            print("!!",compiler.variables)
+            #print("!!",compiler.variables)
 
             modvars = compiler.variables.items()
 
             modvars = [(k,v) for k,v in modvars if k.split(".")[0] == modname]
 
-            print(stuff)
+            #print(stuff)
 
             for name,val in modvars:
                 self.variables[name] = val
 
-            print("^^^^",self.path,self.variables)
+            #print("^^^^",self.path,self.variables)
 
         return ""
     
@@ -116,7 +116,7 @@ class Compiler(Transformer):
 
         modname = module.split(".")[-1]
 
-        print(path)
+        #print(path)
 
         with open(path) as f:
             ast = parser.parse(f.read())
@@ -124,13 +124,13 @@ class Compiler(Transformer):
             compiler = Compiler(path)
             stuff = compiler.transform(ast)
 
-            print("!!",compiler.variables)
+            #print("!!",compiler.variables)
 
             modvars = compiler.variables.items()
 
             modvars = [(k,v) for k,v in modvars if k.split(".")[0] == modname]
 
-            print(stuff)
+            #print(stuff)
 
             for name,val in modvars:
                 self.variables[name] = val
