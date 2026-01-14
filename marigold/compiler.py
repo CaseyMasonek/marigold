@@ -431,6 +431,10 @@ class Compiler(Transformer):
         return f"(PRED({a}))"
     
     @debug
+    def concat(self,a,b):
+        return f"(CONCAT({a})({b}))"
+    
+    @debug
     def addeq(self,name,value):
         self.variables[name.value] = f"(ADD({self.variables[name.value]})({value}))"
 

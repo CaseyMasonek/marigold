@@ -71,6 +71,7 @@ val: name "=" value
       | pair
       | succ
       | pred
+      | concat
 
 pair: "(" atomic "," atomic ")"
 hashmap: "{" (string ":" atomic (","|"}"))+
